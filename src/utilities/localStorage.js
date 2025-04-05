@@ -21,10 +21,8 @@ const addItemToCartLocalStorage = (id) => {
     const cart = getCartFromLocalStorage()
     const newCart = [...cart, id]
 
-    console.log(cart)
-
     // Save new cart to the local storage
     saveCartToLocalStorage(newCart)
 }
 
-export { addItemToCartLocalStorage }
+export { addItemToCartLocalStorage, getCartFromLocalStorage }

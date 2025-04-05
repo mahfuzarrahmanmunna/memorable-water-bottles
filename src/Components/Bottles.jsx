@@ -1,11 +1,28 @@
-import React, { use, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import Bottle from './Bottle';
 import './bottles.css'
-import { addItemToCartLocalStorage, } from '../utilities/localStorage';
+import { addItemToCartLocalStorage, getCartFromLocalStorage, } from '../utilities/localStorage';
 
 const Bottles = ({ bottlesPromise }) => {
 
     const [cart, setCart] = useState([])
+
+    const bottles = use(bottlesPromise);
+
+    useEffect(() => {
+        const storedCartIds = getCartFromLocalStorage()
+        // console.log(storedCartIds)
+        const storedCart = []
+        storedCartIds.forEach(id => {
+            const cartBottle = bottles.find(bottle => bottle.id === id)
+            if (cartBottle) {
+                storedCart.push(cart)
+            }
+        });
+
+        setCart(storedCart)
+    }, [bottles])
+
 
     const handleAddToCart = (bottle) => {
         // console.log('bottle will be added', bottle)
@@ -16,7 +33,6 @@ const Bottles = ({ bottlesPromise }) => {
         addItemToCartLocalStorage(bottle.id)
     }
 
-    const bottles = use(bottlesPromise);
     // console.log(bottles)
     return (
         <div>
