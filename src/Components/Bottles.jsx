@@ -1,31 +1,33 @@
-import React, { use, useEffect, useState } from 'react';
+import React, { use, useState } from 'react';
 import Bottle from './Bottle';
 import './bottles.css'
-import { addItemToCartLocalStorage, getCartFromLocalStorage, } from '../utilities/localStorage';
+import { addItemToCartLocalStorage, getCartFromLocalStorage, removeFromLocalStorage, } from '../utilities/localStorage';
+import Cart from './cart/Cart';
 
 const Bottles = ({ bottlesPromise }) => {
 
-    const [cart, setCart] = useState([])
+    const storedCart = getCartFromLocalStorage()
+    const [cart, setCart] = useState([...storedCart])
 
     const bottles = use(bottlesPromise);
 
-    useEffect(() => {
-        const storedCartIds = getCartFromLocalStorage()
-        // console.log(storedCartIds)
-        const storedCart = []
-        storedCartIds.forEach(id => {
-            const cartBottle = bottles.find(bottle => bottle.id === id)
-            if (cartBottle) {
-                storedCart.push(cart)
-            }
-        });
+    // useEffect(() => {
+    //     const storedCartIds = getCartFromLocalStorage()
+    //     // console.log(storedCartIds)
+    //     const storedCart = []
+    //     storedCartIds.forEach(id => {
+    //         const cartBottle = bottles.find(bottle => bottle.id === id)
+    //         if (cartBottle) {
+    //             storedCart.push(cart)
+    //         }
+    //     });
 
-        setCart(storedCart)
-    }, [bottles])
+    //     setCart(storedCart)
+    // }, [bottles])
 
 
     const handleAddToCart = (bottle) => {
-        // console.log('bottle will be added', bottle)
+        console.log('bottle will be added', bottle)
         const newCart = [...cart, bottle]
         setCart(newCart)
 
@@ -33,11 +35,19 @@ const Bottles = ({ bottlesPromise }) => {
         addItemToCartLocalStorage(bottle.id)
     }
 
+    const handleRemoveCart = id => {
+        console.log('remove item from the cart', id)
+        const remainingCart = cart.filter(bottle => bottle.id !== id);
+        setCart(remainingCart);
+        removeFromLocalStorage(id)
+    }
+
     // console.log(bottles)
     return (
         <div>
             <h3>Bottles : {bottles.length}</h3>
             <p>Added to cart : {cart.length}</p>
+            <Cart handleRemoveCart={handleRemoveCart} cart={cart} />
             <div className='lg:grid lg:grid-cols-3 gap-5'>
                 {
                     bottles.map(bottle => <Bottle key={bottle.id} handleAddToCart={handleAddToCart} bottle={bottle}></Bottle>)
